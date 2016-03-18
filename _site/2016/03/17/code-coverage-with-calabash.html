@@ -1,0 +1,253 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Code Coverage with Calabash</title>
+    <meta name="description" content="">
+    <meta name="author" content="Teresa Peters">
+
+    <!-- Enable responsive viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.2.2.2.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+
+    <!-- atom & rss feed -->
+    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    <link href="/rss.xml" type="application/rss+xml" rel="alternate" title="Sitewide RSS Feed">
+
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container-narrow">
+          <a class="brand" href="/">iOS Automation</a>
+          <ul class="nav">
+            
+            
+            
+
+
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories">Categories</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-narrow">
+
+      <div class="content">
+        
+<div class="page-header">
+  <h1>Code Coverage with Calabash </h1>
+</div>
+
+<div class="row-fluid post-full">
+  <div class="span12">
+    <div class="date">
+      <span>17 March 2016</span>
+    </div>
+    <div class="content">
+      <p>Even though XCode7 is deprecating GCov output, it is still possible to generate .gcda and .gcno files for UI Automation.</p>
+
+<!--more-->
+
+<h2>Here are the steps you would follow...</h2>
+
+<p><b>Before the run (one time):</b>
+<ol>
+  <li>Clean up from your previous run. Delete everything in your output directory.  </li>
+  <li>Generate a baseline file.  </li>
+</ol></p>
+
+<p><b>Each time you run a test case (scenario):</b>
+<ol>
+  <li>Remove old .gcda files (code coverage results from the previous run).</li>
+  <li>Run the test case.</li>
+  <li>Flush (generate those .gcda files).</li>
+  <li>Process all the .gcda files into a single .info file.</li>
+</ol></p>
+
+<p><b>After all the tests are complete (one time):</b>
+<ol>
+  <li>Combine all the .info files into a single file.</li>
+  <li>Generate a report from that file using lcov.</li>
+</ol></p>
+
+<h2>Install this:</h2>
+
+<h3>Homebrew</h3>
+
+<p>If you don&#39;t have it, it&#39;s a great way to install tools without having to compile everything yourself
+<code>/usr/bin/ruby -e &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&quot;</code></p>
+
+<h3>lcov</h3>
+
+<p>This tool is used to generate reports. Gcovr is another option, but it looked like the results weren&#39;t as accurate.
+<code>brew install lcov</code></p>
+
+<p><br><h2>Implementation</h2>
+<h3>XCode</h3>
+<h4>Environment Variables</h4></p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">// Activating this setting causes &#39;.gcno&#39; files to be produced that the gcov code-coverage utility can use to show program coverage.
+GCC_GENERATE_TEST_COVERAGE_FILES = YES
+
+// Activating this setting indicates that code should be added so program flow arcs are instrumented.
+GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = YES
+
+// Lets us know if we have coverage enabled so we can turn the __gcov_flush() lines on/off as appropriate and avoid build errors
+GTM_CONFIGURATION_GCC_PREPROCESSOR_DEFINITIONS = COVERAGE_ENABLED=1
+</code></pre></div>
+<h4>Flushing</h4>
+
+<p>I&#39;ve seen some people have some success with adding _<em>gcov</em>flush() to their AppDelegate class. I decided to manually flush so I had more control.</p>
+
+<h5>Flushing in your Calabash backdoor (recommended flush method)</h5>
+<div class="highlight"><pre><code class="language-text" data-lang="text">- (NSString*)flushGCov:(NSString*)ignored
+{
+#if defined(COVERAGE_ENABLED)
+    extern void __gcov_flush(void);
+    __gcov_flush();
+
+    return @&quot;GCov Flushed&quot;;
+#endif
+    return @&quot;GCov not Flushed&quot;;
+}
+</code></pre></div>
+<h5>Flushing on applicationDidEnterBackground (alternative flush method)</h5>
+
+<p><font color="red">Use at your own risk!</font></p>
+
+<p>You would place this before your @implementation:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">#if defined(COVERAGE_ENABLED)
+#include &lt;stdio.h&gt;
+extern void __gcov_flush();
+#endif
+</code></pre></div>
+<p>And you would add this to your applicationDidEnterBackground method:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">#if defined(COVERAGE_ENABLED)
+    __gcov_flush();
+#endif
+</code></pre></div>
+<h3>Ruby Code</h3>
+
+<p>This is how we have ours set up. You can implement it your own way if you&#39;d like :).
+<a href="https://gist.github.com/TeresaP/3fe3abdba01d47d02847">Gist with our code</a></p>
+
+<h2>Reports</h2>
+
+<p>When the run completes, assuming you have called the methods like I did, you should have a CodeCoverage folder that contains a lot of .info files (including a *combined.info file with all the other .info files merged into it) and an html report folder.</p>
+
+    </div>
+
+    
+
+    
+
+    <hr>
+    <div class="pagination">
+      <ul>
+      
+        <li class="prev disabled"><a>&larr; Previous</a></li>
+      
+        <li><a href="/archive.html">Archive</a></li>
+      
+        <li class="next disabled"><a>Next &rarr;</a>
+      
+      </ul>
+    </div>
+    <hr>
+    
+  </div>
+</div>
+
+
+      </div>
+      <hr>
+      <footer>
+        <p>&copy; 2016 Teresa Peters
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>
+        </p>
+      </footer>
+
+    </div>
+
+    
+
+
+
+  </body>
+</html>
+
