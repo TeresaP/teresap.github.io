@@ -4,7 +4,7 @@
  <title>iOS Automation</title>
  <link href="http://teresap.github.io/atom.xml" rel="self"/>
  <link href="http://teresap.github.io"/>
- <updated>2016-03-18T02:16:37-07:00</updated>
+ <updated>2016-03-18T02:37:04-07:00</updated>
  <id>http://teresap.github.io</id>
  <author>
    <name>Teresa Peters</name>
@@ -43,11 +43,9 @@
   &lt;li&gt;Generate a report from that file using lcov.&lt;/li&gt;
 &lt;/ol&gt;&lt;/p&gt;
 
-&lt;h2&gt;Install this:&lt;/h2&gt;
-
+&lt;p&gt;&lt;br&gt;&lt;h2&gt;Install this:&lt;/h2&gt;
 &lt;h3&gt;Homebrew&lt;/h3&gt;
-
-&lt;p&gt;If you don&amp;#39;t have it, it&amp;#39;s a great way to install tools without having to compile everything yourself
+If you don&amp;#39;t have it, it&amp;#39;s a great way to install tools without having to compile everything yourself
 &lt;code&gt;/usr/bin/ruby -e &amp;quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&amp;quot;&lt;/code&gt;&lt;/p&gt;
 
 &lt;h3&gt;lcov&lt;/h3&gt;
@@ -69,7 +67,7 @@ GTM_CONFIGURATION_GCC_PREPROCESSOR_DEFINITIONS = COVERAGE_ENABLED=1
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h4&gt;Flushing&lt;/h4&gt;
 
-&lt;p&gt;I&amp;#39;ve seen some people have some success with adding _&lt;em&gt;gcov&lt;/em&gt;flush() to their AppDelegate class. I decided to manually flush so I had more control.&lt;/p&gt;
+&lt;p&gt;I&amp;#39;ve seen some people have some success with adding &lt;code&gt;__gcov_flush()&lt;/code&gt; to their AppDelegate class. I decided to manually flush so I had more control.&lt;/p&gt;
 
 &lt;h5&gt;Flushing in your Calabash backdoor (recommended flush method)&lt;/h5&gt;
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;- (NSString*)flushGCov:(NSString*)ignored
@@ -101,11 +99,10 @@ extern void __gcov_flush();
 &lt;h3&gt;Ruby Code&lt;/h3&gt;
 
 &lt;p&gt;This is how we have ours set up. You can implement it your own way if you&amp;#39;d like :).
-&lt;a href=&quot;https://gist.github.com/TeresaP/3fe3abdba01d47d02847&quot;&gt;Gist with our code&lt;/a&gt;&lt;/p&gt;
+&lt;a href=&quot;https://gist.github.com/TeresaP/3fe3abdba01d47d02847&quot;&gt;Gist with the Ruby code&lt;/a&gt;&lt;/p&gt;
 
-&lt;h2&gt;Reports&lt;/h2&gt;
-
-&lt;p&gt;When the run completes, assuming you have called the methods like I did, you should have a CodeCoverage folder that contains a lot of .info files (including a *combined.info file with all the other .info files merged into it) and an html report folder.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;h2&gt;Reports&lt;/h2&gt;
+When the run completes, assuming you have called the methods like I did, you should have a CodeCoverage folder that contains a lot of .info files (including a *combined.info file with all the other .info files merged into it) and an html report folder.&lt;/p&gt;
 </content>
  </entry>
  

@@ -33,7 +33,7 @@ Even though XCode7 is deprecating GCov output, it is still possible to generate 
   <li>Generate a report from that file using lcov.</li>
 </ol>
 
-<h2>Install this:</h2>
+<br><h2>Install this:</h2>
 <h3>Homebrew</h3>
 If you don't have it, it's a great way to install tools without having to compile everything yourself
 ```/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"```
@@ -60,7 +60,7 @@ GTM_CONFIGURATION_GCC_PREPROCESSOR_DEFINITIONS = COVERAGE_ENABLED=1
 
 <h4>Flushing</h4>
 
-I've seen some people have some success with adding __gcov_flush() to their AppDelegate class. I decided to manually flush so I had more control.
+I've seen some people have some success with adding ```__gcov_flush()``` to their AppDelegate class. I decided to manually flush so I had more control.
 
 <h5>Flushing in your Calabash backdoor (recommended flush method)</h5>
 ```
@@ -98,9 +98,9 @@ And you would add this to your applicationDidEnterBackground method:
 
 <h3>Ruby Code</h3>
 This is how we have ours set up. You can implement it your own way if you'd like :).
-<a href="https://gist.github.com/TeresaP/3fe3abdba01d47d02847">Gist with our code</a>
+<a href="https://gist.github.com/TeresaP/3fe3abdba01d47d02847">Gist with the Ruby code</a>
 
-<h2>Reports</h2>
+<br><h2>Reports</h2>
 When the run completes, assuming you have called the methods like I did, you should have a CodeCoverage folder that contains a lot of .info files (including a *combined.info file with all the other .info files merged into it) and an html report folder.
 
 
