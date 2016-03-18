@@ -5,14 +5,14 @@
         <description>iOS Automation - Teresa Peters</description>
         <link>http://teresap.github.io</link>
         <atom:link href="http://teresap.github.io/rss.xml" rel="self" type="application/rss+xml" />
-        <lastBuildDate>Fri, 18 Mar 2016 02:37:04 -0700</lastBuildDate>
-        <pubDate>Fri, 18 Mar 2016 02:37:04 -0700</pubDate>
+        <lastBuildDate>Fri, 18 Mar 2016 02:41:37 -0700</lastBuildDate>
+        <pubDate>Fri, 18 Mar 2016 02:41:37 -0700</pubDate>
         <ttl>60</ttl>
 
 
         <item>
                 <title>Code Coverage with Calabash</title>
-                <description>&lt;p&gt;Even though XCode7 is deprecating GCov output, it is still possible to generate .gcda and .gcno files for UI Automation.&lt;/p&gt;
+                <description>&lt;p&gt;Even though XCode7 is deprecating GCov output, it is still possible to generate .gcda and .gcno files for UI Automation.  However, it is my experience that code coverage files are only generated for simulator. This means it won&amp;#39;t be possible to get code coverage for any tests that are limited to physical devices.  (If you do find a way to get it to generate on a device, please let me know!)&lt;/p&gt;
 
 &lt;!--more--&gt;
 
