@@ -9,6 +9,8 @@ tags: []
 
 Even though XCode7 is deprecating GCov output, it is still possible to generate .gcda and .gcno files for UI Automation.  However, it is my experience that code coverage files are only generated for simulator. This means it won't be possible to get code coverage for any tests that are limited to physical devices.  (If you do find a way to get it to generate on a device, please let me know!)
 
+<b>It is important to note that you will get less accurate code coverage results with this deprecated gcov output from XCode7 than running tests with XCode6. It will, however, give you a minimum number.  I am actively working to get the numbers closer and will report back.</b>
+
 <!--more-->
 
 <h2>Here are the steps you would follow...</h2>
