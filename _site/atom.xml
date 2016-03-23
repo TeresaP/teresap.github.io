@@ -4,7 +4,7 @@
  <title>iOS Automation</title>
  <link href="http://teresap.github.io/atom.xml" rel="self"/>
  <link href="http://teresap.github.io"/>
- <updated>2016-03-18T02:41:37-07:00</updated>
+ <updated>2016-03-23T16:09:31-07:00</updated>
  <id>http://teresap.github.io</id>
  <author>
    <name>Teresa Peters</name>
@@ -17,92 +17,103 @@
    <link href="http://teresap.github.io/2016/03/17/code-coverage-with-calabash"/>
    <updated>2016-03-17T00:00:00-07:00</updated>
    <id>http://teresap.github.io/2016/03/17/code-coverage-with-calabash</id>
-   <content type="html">&lt;p&gt;Even though XCode7 is deprecating GCov output, it is still possible to generate .gcda and .gcno files for UI Automation.  However, it is my experience that code coverage files are only generated for simulator. This means it won&amp;#39;t be possible to get code coverage for any tests that are limited to physical devices.  (If you do find a way to get it to generate on a device, please let me know!)&lt;/p&gt;
+   <content type="html">
+&lt;p&gt;Even though XCode7 is deprecating GCov output, it is still possible to generate .gcda and .gcno files for UI Automation.  However, it is my experience that code coverage files are only generated for simulator. This means it won’t be possible to get code coverage for any tests that are limited to physical devices.  (If you do find a way to get it to generate on a device, please let me know!)&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;It is important to note that you will get less accurate code coverage results with this deprecated gcov output from XCode7 than running tests with XCode6. It will, however, give you a minimum number.  I am actively working to get the numbers closer and will report back.&lt;/b&gt;&lt;/p&gt;
 
 &lt;!--more--&gt;
 
 &lt;h2&gt;Here are the steps you would follow...&lt;/h2&gt;
 
-&lt;p&gt;&lt;b&gt;Before the run (one time):&lt;/b&gt;
+&lt;p&gt;&lt;b&gt;Before the run (one time):&lt;/b&gt;&lt;/p&gt;
 &lt;ol&gt;
   &lt;li&gt;Clean up from your previous run. Delete everything in your output directory.  &lt;/li&gt;
   &lt;li&gt;Generate a baseline file.  &lt;/li&gt;
-&lt;/ol&gt;&lt;/p&gt;
+&lt;/ol&gt;
 
-&lt;p&gt;&lt;b&gt;Each time you run a test case (scenario):&lt;/b&gt;
+&lt;p&gt;&lt;b&gt;Each time you run a test case (scenario):&lt;/b&gt;&lt;/p&gt;
 &lt;ol&gt;
   &lt;li&gt;Remove old .gcda files (code coverage results from the previous run).&lt;/li&gt;
   &lt;li&gt;Run the test case.&lt;/li&gt;
   &lt;li&gt;Flush (generate those .gcda files).&lt;/li&gt;
   &lt;li&gt;Process all the .gcda files into a single .info file.&lt;/li&gt;
-&lt;/ol&gt;&lt;/p&gt;
+&lt;/ol&gt;
 
-&lt;p&gt;&lt;b&gt;After all the tests are complete (one time):&lt;/b&gt;
+&lt;p&gt;&lt;b&gt;After all the tests are complete (one time):&lt;/b&gt;&lt;/p&gt;
 &lt;ol&gt;
   &lt;li&gt;Combine all the .info files into a single file.&lt;/li&gt;
   &lt;li&gt;Generate a report from that file using lcov.&lt;/li&gt;
-&lt;/ol&gt;&lt;/p&gt;
+&lt;/ol&gt;
 
-&lt;p&gt;&lt;br&gt;&lt;h2&gt;Install this:&lt;/h2&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;h2&gt;Install this:&lt;/h2&gt;
 &lt;h3&gt;Homebrew&lt;/h3&gt;
-If you don&amp;#39;t have it, it&amp;#39;s a great way to install tools without having to compile everything yourself
-&lt;code&gt;/usr/bin/ruby -e &amp;quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;If you don’t have it, it’s a great way to install tools without having to compile everything yourself
+&lt;code&gt;/usr/bin/ruby -e &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&quot;&lt;/code&gt;&lt;/p&gt;
 
 &lt;h3&gt;lcov&lt;/h3&gt;
-
-&lt;p&gt;This tool is used to generate reports. Gcovr is another option, but it looked like the results weren&amp;#39;t as accurate.
+&lt;p&gt;This tool is used to generate reports. Gcovr is another option, but it looked like the results weren’t as accurate.
 &lt;code&gt;brew install lcov&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;br&gt;&lt;h2&gt;Implementation&lt;/h2&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;h2&gt;Implementation&lt;/h2&gt;
 &lt;h3&gt;XCode&lt;/h3&gt;
-&lt;h4&gt;Environment Variables&lt;/h4&gt;&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;// Activating this setting causes &amp;#39;.gcno&amp;#39; files to be produced that the gcov code-coverage utility can use to show program coverage.
-GCC_GENERATE_TEST_COVERAGE_FILES = YES
+&lt;h4&gt;Environment Variables&lt;/h4&gt;
 
+&lt;pre&gt;&lt;code&gt;// Activating this setting causes &#39;.gcno&#39; files to be produced that the gcov code-coverage utility can use to show program coverage.
+GCC_GENERATE_TEST_COVERAGE_FILES = YES
+ 
 // Activating this setting indicates that code should be added so program flow arcs are instrumented.
 GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = YES
-
+ 
 // Lets us know if we have coverage enabled so we can turn the __gcov_flush() lines on/off as appropriate and avoid build errors
 GTM_CONFIGURATION_GCC_PREPROCESSOR_DEFINITIONS = COVERAGE_ENABLED=1
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;h4&gt;Flushing&lt;/h4&gt;
 
-&lt;p&gt;I&amp;#39;ve seen some people have some success with adding &lt;code&gt;__gcov_flush()&lt;/code&gt; to their AppDelegate class. I decided to manually flush so I had more control.&lt;/p&gt;
+&lt;p&gt;I’ve seen some people have some success with adding &lt;code&gt;__gcov_flush()&lt;/code&gt; to their AppDelegate class. I decided to manually flush so I had more control.&lt;/p&gt;
 
 &lt;h5&gt;Flushing in your Calabash backdoor (recommended flush method)&lt;/h5&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;- (NSString*)flushGCov:(NSString*)ignored
+&lt;pre&gt;&lt;code&gt;- (NSString*)flushGCov:(NSString*)ignored
 {
 #if defined(COVERAGE_ENABLED)
-    extern void __gcov_flush(void);
-    __gcov_flush();
-
-    return @&amp;quot;GCov Flushed&amp;quot;;
+	extern void __gcov_flush(void);
+	__gcov_flush();
+	
+	return @&quot;GCov Flushed&quot;;
 #endif
-    return @&amp;quot;GCov not Flushed&amp;quot;;
+	return @&quot;GCov not Flushed&quot;;
 }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;h5&gt;Flushing on applicationDidEnterBackground (alternative flush method)&lt;/h5&gt;
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;font color=&quot;red&quot;&gt;Use at your own risk!&lt;/font&gt;&lt;/p&gt;
+&lt;h5&gt;Flushing on applicationDidEnterBackground (alternative flush method)&lt;/h5&gt;
+&lt;font color=&quot;red&quot;&gt;Use at your own risk!&lt;/font&gt;
 
 &lt;p&gt;You would place this before your @implementation:&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;#if defined(COVERAGE_ENABLED)
+
+&lt;pre&gt;&lt;code&gt;#if defined(COVERAGE_ENABLED)
 #include &amp;lt;stdio.h&amp;gt;
 extern void __gcov_flush();
 #endif
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;And you would add this to your applicationDidEnterBackground method:&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;#if defined(COVERAGE_ENABLED)
-    __gcov_flush();
-#endif
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;h3&gt;Ruby Code&lt;/h3&gt;
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;This is how we have ours set up. You can implement it your own way if you&amp;#39;d like :).
+&lt;p&gt;And you would add this to your applicationDidEnterBackground method:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#if defined(COVERAGE_ENABLED)
+	__gcov_flush();
+#endif
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;h3&gt;Ruby Code&lt;/h3&gt;
+&lt;p&gt;This is how we have ours set up. You can implement it your own way if you’d like :).
 &lt;a href=&quot;https://gist.github.com/TeresaP/3fe3abdba01d47d02847&quot;&gt;Gist with the Ruby code&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;br&gt;&lt;h2&gt;Reports&lt;/h2&gt;
-When the run completes, assuming you have called the methods like I did, you should have a CodeCoverage folder that contains a lot of .info files (including a *combined.info file with all the other .info files merged into it) and an html report folder.&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;h2&gt;Reports&lt;/h2&gt;
+&lt;p&gt;When the run completes, assuming you have called the methods like I did, you should have a CodeCoverage folder that contains a lot of .info files (including a *combined.info file with all the other .info files merged into it) and an html report folder.&lt;/p&gt;
+
 </content>
  </entry>
  
